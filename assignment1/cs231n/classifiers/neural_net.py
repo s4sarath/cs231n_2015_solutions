@@ -3,8 +3,6 @@ import matplotlib.pyplot as plt
 
 
 relu = lambda x: x * (x > 0).astype(float)
-drelu = lambda x: (x >= 0).astype(float)
-
 
 class TwoLayerNet(object):
   """
@@ -79,11 +77,10 @@ class TwoLayerNet(object):
     # shape (N, C).                                                             #
     #############################################################################
 
-    a1 = X
-    z2 = a1.dot(W1) + b1.T
-    a2 = relu(z2)
-    z3 = a2.dot(W2) + b2.T
-    scores = z3
+    z1 = X.dot(W1) + b1.T
+    a1 = relu(z1)
+    z2 = a1.dot(W2) + b2.T
+    scores = z2
 
     #############################################################################
     #                              END OF YOUR CODE                             #
@@ -125,18 +122,21 @@ class TwoLayerNet(object):
 
     P[(range(num_train),y)] = P[(range(num_train),y)] - 1
 
-    delta3 = P / num_train # loss differentiation at ouput layer
-    delta2 = np.dot(delta3,W2.T) * drelu(z2)
+    # loss differentiation at ouput layer
+    delta2 = P / num_train
+    # differentiation here is just letting value to np.dot(delta2,W2.T) z2>0
+    # this is achieved by dot product
+    delta1 = np.dot(delta2,W2.T) * ((z1 >= 0).astype(float))
 
-    dW2 = np.dot(a2.T,delta3)
-    dW1 = np.dot(a1.T,delta2)
+    dW2 = np.dot(a1.T,delta2)
+    dW1 = np.dot(X.T,delta1)
 
     dW1 += reg * W1
     dW2 += reg * W2
 
     # # Same as matrix multiplication with 1-vector, chain rule works out
-    db1 = np.sum(delta2, axis=0)
-    db2 = np.sum(delta3, axis=0)
+    db1 = np.sum(delta1, axis=0)
+    db2 = np.sum(delta2, axis=0)
 
     # print "X  : "+str(X.shape)
     # print "W1 : "+str(W1.shape)
