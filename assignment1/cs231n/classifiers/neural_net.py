@@ -138,12 +138,6 @@ class TwoLayerNet(object):
     db1 = np.sum(delta1, axis=0)
     db2 = np.sum(delta2, axis=0)
 
-    # print "X  : "+str(X.shape)
-    # print "W1 : "+str(W1.shape)
-    # print "b1 : "+str(b1.shape)
-    # print "W2 : "+str(W2.shape)
-    # print "b2 : "+str(b2.shape)
-
     grads["W1"] = dW1
     grads["W2"] = dW2
     grads["b1"] = db1
